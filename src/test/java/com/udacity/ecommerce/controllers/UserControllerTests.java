@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.Optional;
+
 import static org.junit.Assert.*;
 
 public class UserControllerTests {
@@ -25,9 +27,9 @@ public class UserControllerTests {
     }
 
     @Test
-    public void createUserHappyPath() {
+    public void createUserTest() {
         CreateUserRequest createUserRequest = new CreateUserRequest();
-        createUserRequest.setUsername("Test");
+        createUserRequest.setUsername("John");
         createUserRequest.setPassword("testPassword");
         createUserRequest.setConfirmPassword("testPassword");
         Mockito.when(bCryptPasswordEncoder.encode("testPassword")).thenReturn("hashedPassword");
@@ -41,5 +43,46 @@ public class UserControllerTests {
         assertEquals(0, user.getId());
         assertEquals(createUserRequest.getUsername(), user.getUsername());
         assertEquals("hashedPassword", user.getPassword());
+    }
+
+    @Test
+    public void createUserWrongConfirmPasswordTest() {
+        CreateUserRequest createUserRequest = new CreateUserRequest();
+        createUserRequest.setUsername("John");
+        createUserRequest.setPassword("testPassword");
+        createUserRequest.setConfirmPassword("wrongPassword");
+        Mockito.when(bCryptPasswordEncoder.encode("testPassword")).thenReturn("hashedPassword");
+
+        ResponseEntity<User> responseEntity = userController.createUser(createUserRequest);
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void findByIdTest() {
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("John");
+        user.setPassword("testPassword");
+        Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+        ResponseEntity<User> findUserResponseEntity = userController.findById(user.getId());
+        assertNotNull(findUserResponseEntity);
+        assertEquals(HttpStatus.OK, findUserResponseEntity.getStatusCode());
+        assertEquals(user, findUserResponseEntity.getBody());
+    }
+
+    @Test
+    public void findByUsernameTest() {
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("John");
+        user.setPassword("testPassword");
+        Mockito.when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
+
+        ResponseEntity<User> findUserResponseEntity = userController.findByUserName(user.getUsername());
+        assertNotNull(findUserResponseEntity);
+        assertEquals(HttpStatus.OK, findUserResponseEntity.getStatusCode());
+        assertEquals(user, findUserResponseEntity.getBody());
     }
 }
