@@ -69,7 +69,7 @@ public class CartControllerTests {
         modifyCartRequest.setItemId(1L);
         modifyCartRequest.setQuantity(5);
 
-        ResponseEntity<Cart> responseEntity = cartController.removeFromcart(modifyCartRequest);
+        ResponseEntity<Cart> responseEntity = cartController.removeFromCart(modifyCartRequest);
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }

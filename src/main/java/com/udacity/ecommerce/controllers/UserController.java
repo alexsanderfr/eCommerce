@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/api/user")
@@ -32,30 +34,44 @@ public class UserController {
 
     @GetMapping("/id/{id}")
     public ResponseEntity<User> findById(@PathVariable Long id) {
-        return ResponseEntity.of(userRepository.findById(id));
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            return ResponseEntity.ok(optionalUser.get());
+        } else {
+            log.info("ERROR: User not found");
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/{username}")
     public ResponseEntity<User> findByUserName(@PathVariable String username) {
         User user = userRepository.findByUsername(username);
-        return user == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(user);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            log.info("ERROR: User not found");
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/create")
     public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) {
         User user = new User();
         user.setUsername(createUserRequest.getUsername());
-        log.info("User name set with {}", createUserRequest.getUsername());
+
         Cart cart = new Cart();
         cartRepository.save(cart);
         user.setCart(cart);
         String password = createUserRequest.getPassword();
         String confirmPassword = createUserRequest.getConfirmPassword();
         if (password.length() < 8 || !password.equals(confirmPassword)) {
+            log.info("ERROR: Invalid password {}", password);
             return ResponseEntity.badRequest().build();
+
         }
         user.setPassword(bCryptPasswordEncoder.encode(password));
         userRepository.save(user);
+        log.info("SUCCESS: User {} was created", password);
         return ResponseEntity.ok(user);
     }
 
