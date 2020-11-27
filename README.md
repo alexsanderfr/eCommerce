@@ -2,6 +2,10 @@
 
 Web app for eCommerce
 
+### Screenshots
+
+Screenshots are available at the folder "screenshots"
+
 ### Prerequisites
 
 ```
