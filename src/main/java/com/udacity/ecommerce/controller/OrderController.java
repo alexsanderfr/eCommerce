@@ -1,4 +1,4 @@
-package com.udacity.ecommerce.controllers;
+package com.udacity.ecommerce.controller;
 
 import com.udacity.ecommerce.model.persistence.User;
 import com.udacity.ecommerce.model.persistence.UserOrder;

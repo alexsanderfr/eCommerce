@@ -1,4 +1,4 @@
-package com.udacity.ecommerce.controllers;
+package com.udacity.ecommerce.controller;
 
 import com.udacity.ecommerce.model.persistence.Cart;
 import com.udacity.ecommerce.model.persistence.Item;
